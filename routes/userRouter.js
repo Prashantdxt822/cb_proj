@@ -84,10 +84,10 @@ router.post('/journey/:id',async(req,res)=>{
         const user= await User.findById(userId);
         const ride= await Ride.findOne({vehicle});
         if(!user || !ride || ride.quantity==0){
-            res.status(400).send({msg:"sorry! the ride cannot be booked"});
+            return res.status(400).send({msg:"sorry! the ride cannot be booked"});
         }
         if(user.walletBalance<ride.price){
-            res.status(400).send({msg:"insufficient wallet balance!"});
+            return  res.status(400).send({msg:"insufficient wallet balance!"});
         }
         else{
             const journey=await Journey.create({ride_id:ride._id,user_id:user._id,address});
@@ -99,6 +99,17 @@ router.post('/journey/:id',async(req,res)=>{
     } catch (error) {
         console.log(error);
         res.status(500).send({msg:"internal server error!"})
+    }
+});
+
+router.get('/journey/:id',async(req,res)=>{
+    try {
+        const userId=req.params.id;
+        const allJourneys=await Journey.find({user_id:userId});
+        return res.status(200).send({allJourneys});
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({msg:"internal server error!"});
     }
 })
 

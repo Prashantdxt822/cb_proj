@@ -70,7 +70,8 @@ router.put('/ride/:id',async(req,res)=>{
         if(!ride){
             return res.status(400).send({msg:"ride doesnt exist"});
         }
-        await Ride.findOneAndUpdate(rideId,req.body);
+        await Ride.findByIdAndUpdate(rideId,req.body);
+        return res.status(200).send({msg:"ride successfully updated!"});
     } catch (error) {
         console.log(error);
         res.status(500).send({msg:"server has some internal error!"});
