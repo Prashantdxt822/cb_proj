@@ -1,5 +1,5 @@
 const express= require('express');
-const { User } = require('../db');
+const { User, Ride, Journey } = require('../db');
 const jwt= require("jsonwebtoken")
 const {JWT_SECRET}=require('../config')
 
@@ -74,6 +74,31 @@ router.put('/wallet/:id',async(req,res)=>{
     } catch (error) {
         console.log(error);
         res.status(500).send({msg:'internal server error...'});     
+    }
+});
+
+router.post('/journey/:id',async(req,res)=>{
+    try {
+        const {vehicle,address}=req.body;
+        const userId=req.params.id;
+        const user= await User.findById(userId);
+        const ride= await Ride.findOne({vehicle});
+        if(!user || !ride || ride.quantity==0){
+            res.status(400).send({msg:"sorry! the ride cannot be booked"});
+        }
+        if(user.walletBalance<ride.price){
+            res.status(400).send({msg:"insufficient wallet balance!"});
+        }
+        else{
+            const journey=await Journey.create({ride_id:ride._id,user_id:user._id,address});
+            await Ride.findByIdAndUpdate(ride._id,{$inc:{quantity:-1}});
+            await User.findByIdAndUpdate(userId,{$inc:{'walletBalance.amount':ride.price}});
+            res.status(200).send({msg:"journey successfully created!",journeyId:journey._id});
+        }
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({msg:"internal server error!"})
     }
 })
 

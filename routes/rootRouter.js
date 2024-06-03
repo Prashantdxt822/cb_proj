@@ -6,4 +6,4 @@ const router=express.Router();
 router.use('/user',userRouter);
 router.use('/admin',adminRouter);
 
-module.exports=router
+module.exports=router;

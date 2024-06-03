@@ -75,6 +75,11 @@ const journeySchema= new mongoose.Schema({
         address:{
             type:String,
             required:true
+        },
+        user_id:{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"User",
+            required:true
         }
 })
 

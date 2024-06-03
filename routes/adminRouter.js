@@ -50,8 +50,8 @@ router.get('/ride',async(req,res)=>{
 
 router.post('/ride',async(req,res)=>{
     try {
-        const {type,quantity,price}=req.body;
-        const ride= await Ride.find({type});
+        const {vehicle,quantity,price}=req.body;
+        const ride= await Ride.findOne({vehicle});
         if(ride){
             res.status(400).send({msg:"ride already exists"});
         }
