@@ -39,6 +39,21 @@ router.get('/signin',async(req,res)=>{
     }
 })
 
+router.put('/:id',async(req,res)=>{
+    try {
+        const userId= req.params.id;
+        const user=await User.findById(userId);
+        if(!user){
+            return res.status(400).send({msg:"user doesnt exist"});
+        }
+        await User.findByIdAndUpdate(userId,req.body);
+        return res.status(200).send({msg:"user details successfully updated!"});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send({msg:"internal server error"});
+    }
+})
+
 router.get('/ride',async(req,res)=>{
     try {
         const allRides=await Ride.find({});
