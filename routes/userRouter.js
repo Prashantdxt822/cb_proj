@@ -1,7 +1,8 @@
 const express= require('express');
 const { User, Ride, Journey } = require('../db');
 const jwt= require("jsonwebtoken")
-const {JWT_SECRET}=require('../config')
+const {JWT_SECRET}=require('../config');
+const { userCheck } = require('../middlewares/user');
 
 const router=express.Router();
 
@@ -38,6 +39,8 @@ router.get('/signin',async(req,res)=>{
         res.status(500).send({msg:"internal server error!"})
     }
 })
+
+router.use(userCheck);
 
 router.put('/:id',async(req,res)=>{
     try {
