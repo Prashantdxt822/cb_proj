@@ -2,6 +2,9 @@
 const express=require('express');
 const { Admin, Ride } = require('../db');
 const router=express.Router();
+const {JWT_SECRET_ADMIN}= require('../config');
+const { adminCheck } = require('../middlewares/admin');
+const jwt=require('jsonwebtoken')
 
 
 router.post('/signup',async(req,res)=>{
@@ -9,11 +12,11 @@ router.post('/signup',async(req,res)=>{
     try {
         const admin = await Admin.findOne({username});
         if(admin){
-            res.status(401).send({msg:"user already exists"});
+            res.status(401).send({msg:"admin already exists"});
         }
         else{
              const createdAdmin=await Admin.create(req.body);
-             const token= jwt.sign({userId:createdAdmin._id},JWT_SECRET);
+             const token= jwt.sign({adminId:createdAdmin._id},JWT_SECRET_ADMIN);
              return res.status(200).send({token});
         }
     } catch (error) {
@@ -30,13 +33,15 @@ router.get('/signin',async(req,res)=>{
         if(!admin){
             res.status(401).send({msg:"User does not exist"});
         }
-        const token= jwt.sign({userId:admin._id},JWT_SECRET);
+        const token= jwt.sign({adminId:admin._id},JWT_SECRET_ADMIN);
         res.status(200).send({msg:"successfully signed in!",token});
     } catch (error) {
         console.log(error);
         res.status(500).send({msg:"internal server error!"})
     }
 })
+
+router.use(adminCheck);
 
 router.get('/ride',async(req,res)=>{
     try {
